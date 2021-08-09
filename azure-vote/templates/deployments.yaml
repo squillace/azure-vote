@@ -1,9 +1,12 @@
-apiVersion: apps/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: vote-back-{{.Release.Name}}
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: vote-back-{{.Release.Name}}
   template:
     metadata:
       labels:
@@ -15,8 +18,11 @@ spec:
         ports:
         - containerPort: 6379
           name: "{{ .Values.backend.image }}"
+      imagePullSecrets:
+        -name: "{{ .Values.imageSecret.name }}"
+
 ---
-apiVersion: apps/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: vote-front-{{.Release.Name}}
@@ -27,6 +33,9 @@ spec:
       maxSurge: 1
       maxUnavailable: 1
   minReadySeconds: 5 
+  selector:
+    matchLabels:
+      app: vote-front-{{.Release.Name}}
   template:
     metadata:
       labels:
@@ -52,5 +61,6 @@ spec:
           value: {{ .Values.value1 }}
         - name: VOTE2VALUE
           value: {{ .Values.value2 }}
-
+      imagePullSecrets: 
+        - name: "{{ .Values.imageSecret.name }}"
 # Add if operator to env vars

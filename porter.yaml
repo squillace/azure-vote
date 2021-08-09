@@ -4,7 +4,7 @@
 # Uncomment out the sections below to take full advantage of what Porter can do!
 
 name: azure-vote
-version: 0.1.2
+version: 0.1.5
 description: "An example Porter bundle that uses both OSS and custom images."
 # TODO: update the registry to your own, e.g. myregistry
 registry: squillace.azurecr.io
@@ -41,18 +41,19 @@ mixins:
   - exec
   - helm3
 
+
 install:
   - helm3:
-      description: "Install redis...."
+      description: "Install azure-vote application with Helm 3...."
       name: "{{ bundle.parameters.release }}"
       chart: ./azure-vote
       set:
-        msg: "{{ bundle.parameters.msg }}"
+        msg: "'{{ bundle.parameters.msg }}'"
         backend.registry: "{{ bundle.images.backend.repository }}"
         backend.digest: "{{ bundle.images.backend.digest }}"
         frontend.registry: "{{ bundle.images.backend.repository }}"
         frontend.digest: "{{ bundle.images.backend.digest }}"
-
+        imageSecret.name: "'{{bundle.parameters.imageSecretName}}'"
 
 
 upgrade:
@@ -63,17 +64,17 @@ upgrade:
         - upgrade
 
 uninstall:
-  - exec:
-      description: "Uninstall Hello World"
-      command: ./helpers.sh
-      arguments:
-        - uninstall
+  - helm3: 
+      description: "Uninstalling the azure-vote Helm 3 release...."
+#      namespace: "{{bundle.parameters.namespace}}"
+      releases:
+        - "{{bundle.parameters.release}}" 
 
 # Below is an example of how to define credentials
 # See https://porter.sh/author-bundles/#credentials
-#credentials:
-#  - name: kubeconfig
-#    path: /root/.kube/config
+credentials:
+  - name: kubeconfig
+    path: /root/.kube/config
 #  - name: username
 #    env: USERNAME
 
@@ -86,3 +87,31 @@ parameters:
   - name: msg
     type: string
     default: "Deployed by Porter."
+  - name: imageSecretName
+    type: string
+    default: squillace-azure
+
+# The following values are consumed by the Azure Portal and turned into visual blades and UI elements.
+custom:
+  com.azure.creatuidef:
+    blades:
+      Kubernetes:
+        displayOrder: 1
+        label: Kubernetes Properties
+      Porter:
+        displayOrder: 2
+        label: Porter and CNAB Properties
+    elements:
+      - name: kubeconfig
+        tooltip: A valid Kubernetes config for the Kuberentes cluster to install Kubeflow
+        displayName: Kubernetes Configuration
+        displayOrder: 1
+        uitype: Microsoft.Common.TextBox
+        bladename: Kubernetes
+      - name: deploymentTime
+        hide: true
+      - name: cnab_installation_name
+        displayOrder: 1
+        tooltip: The CNAB Bundle installation name
+        displayName: Installation Name
+        bladename: Porter

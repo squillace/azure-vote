@@ -19,3 +19,5 @@ backend:
   image: redis
   tag: latest
   registry: docker.io/library
+imageSecret:
+  name: ""
