@@ -4,7 +4,7 @@
 # Uncomment out the sections below to take full advantage of what Porter can do!
 
 name: azure-vote
-version: 0.1.4
+version: 0.1.6
 description: "An example Porter bundle that uses both OSS and custom images."
 # TODO: update the registry to your own, e.g. myregistry
 registry: squillace.azurecr.io

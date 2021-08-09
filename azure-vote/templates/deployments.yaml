@@ -19,7 +19,7 @@ spec:
         - containerPort: 6379
           name: "{{ .Values.backend.image }}"
       imagePullSecrets:
-        -name: "{{ .Values.imageSecret.name }}"
+        - name: {{ .Values.imageSecret.name }}
 
 ---
 apiVersion: apps/v1
@@ -62,5 +62,5 @@ spec:
         - name: VOTE2VALUE
           value: {{ .Values.value2 }}
       imagePullSecrets: 
-        - name: "{{ .Values.imageSecret.name }}"
+        - name: {{ .Values.imageSecret.name }}
 # Add if operator to env vars
